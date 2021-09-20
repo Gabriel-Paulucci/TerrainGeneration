@@ -1,10 +1,10 @@
 use amethyst::{
     core::TransformBundle,
-    renderer::{types::DefaultBackend, RenderFlat3D, RenderToWindow, RenderingBundle},
+    renderer::{types::DefaultBackend, RenderPbr3D, RenderToWindow, RenderingBundle},
     utils::application_root_dir,
     Application, GameDataBuilder,
 };
-use states::initial_state::InitialState;
+use states::InitialState;
 
 mod states;
 
@@ -26,9 +26,9 @@ fn main() -> amethyst::Result<()> {
             RenderingBundle::<DefaultBackend>::new()
                 .with_plugin(
                     RenderToWindow::from_config_path(display_config)?
-                        .with_clear([0.0, 0.0, 0.0, 1.0]),
+                        .with_clear([0.34, 0.36, 0.52, 1.0]),
                 )
-                .with_plugin(RenderFlat3D::default()),
+                .with_plugin(RenderPbr3D::default()),
         )?;
 
     let mut game = Application::new(assets_path, InitialState, game_data)?;

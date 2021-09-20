@@ -1,3 +1,4 @@
 (
-    title: "Terrain Generation"
+    title: "Terrain Generation",
+    dimensions: Some((800, 600)),
 )
