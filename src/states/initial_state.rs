@@ -8,8 +8,11 @@ use amethyst::{
         light::{Light, PointLight},
         loaders::load_from_linear_rgba,
         palette::{LinSrgba, Srgb},
-        rendy::mesh::{Normal, Position, Tangent, TexCoord},
-        shape::Shape,
+        rendy::{
+            hal::Primitive,
+            mesh::{Color, MeshBuilder, PosColor, PosNorm, Position},
+        },
+        shape::InternalShape,
         Camera, Material, MaterialDefaults, Mesh, Texture,
     },
     shred::World,
@@ -47,40 +50,61 @@ fn init_terrain(world: &mut World) {
     let trasform = Transform::default();
 
     let mesh = world.exec(|loader: AssetLoaderSystemData<'_, Mesh>| {
-        loader.load_from_data(
-            Shape::Sphere(64, 64)
-                .generate::<(Vec<Position>, Vec<Normal>, Vec<Tangent>, Vec<TexCoord>)>(None)
-                .into(),
-            (),
-        )
+        let verts: Vec<PosColor> = vec![
+            PosColor {
+                position: Position([-100., 0., 0.]),
+                color: Color([1., 0., 0., 1.]),
+            },
+            PosColor {
+                position: Position([100., 0., 0.]),
+                color: Color([0., 1., 0., 1.]),
+            },
+            PosColor {
+                position: Position([0., 100., 0.]),
+                color: Color([0., 0., 1., 1.]),
+            },
+        ];
+
+        let mesh_builder = MeshBuilder::from(verts)
+            .with_indices(vec![0_u32, 1, 2])
+            .with_prim_type(Primitive::TriangleList);
+
+        // loader.load_from_data(
+        //     Shape::Sphere(64, 64)
+        //         .generate::<(Vec<Position>, Vec<Normal>, Vec<Tangent>, Vec<TexCoord>)>(None)
+        //         .into(),
+        //     (),
+        // )
+
+        loader.load_from_data(mesh_builder.into(), ())
     });
 
-    let material = {
-        let material_defaults = world.read_resource::<MaterialDefaults>().0.clone();
+    // let material = {
+    //     let material_defaults = world.read_resource::<MaterialDefaults>().0.clone();
 
-        let albedo = world.exec(|loader: AssetLoaderSystemData<'_, Texture>| {
-            loader.load_from_data(
-                load_from_linear_rgba(LinSrgba::new(1.0, 1.0, 1.0, 0.5)).into(),
-                (),
-            )
-        });
+    //     let albedo = world.exec(|loader: AssetLoaderSystemData<'_, Texture>| {
+    //         loader.load_from_data(
+    //             load_from_linear_rgba(LinSrgba::new(1.0, 1.0, 1.0, 0.5)).into(),
+    //             (),
+    //         )
+    //     });
 
-        world.exec(|loader: AssetLoaderSystemData<'_, Material>| {
-            loader.load_from_data(
-                Material {
-                    albedo,
-                    ..material_defaults
-                },
-                (),
-            )
-        })
-    };
+    //     world.exec(|loader: AssetLoaderSystemData<'_, Material>| {
+    //         loader.load_from_data(
+    //             Material {
+    //                 albedo,
+    //                 ..material_defaults
+    //             },
+    //             (),
+    //         )
+    //     })
+    // };
 
     world
         .create_entity()
-        .with(mesh)
-        .with(material)
         .with(trasform)
+        // .with(material)
+        .with(mesh)
         .build();
 }
 

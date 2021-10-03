@@ -1,6 +1,8 @@
 use amethyst::{
     core::TransformBundle,
-    renderer::{types::DefaultBackend, RenderPbr3D, RenderToWindow, RenderingBundle},
+    renderer::{
+        types::DefaultBackend, RenderPbr3D, RenderShaded3D, RenderToWindow, RenderingBundle,
+    },
     utils::application_root_dir,
     Application, GameDataBuilder,
 };
@@ -28,7 +30,7 @@ fn main() -> amethyst::Result<()> {
                     RenderToWindow::from_config_path(display_config)?
                         .with_clear([0.34, 0.36, 0.52, 1.0]),
                 )
-                .with_plugin(RenderPbr3D::default()),
+                .with_plugin(RenderShaded3D::default()),
         )?;
 
     let mut game = Application::new(assets_path, InitialState, game_data)?;
